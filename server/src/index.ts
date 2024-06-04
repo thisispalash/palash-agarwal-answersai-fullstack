@@ -1,6 +1,8 @@
 import 'dotenv/config';
+import 'tsconfig-paths/register';
 import express from 'express';
-import http from 'http';
+import fs from 'fs';
+import https from 'https';
 import cors from 'cors';
 import { Server } from 'socket.io';
 
@@ -11,7 +13,10 @@ import authRoutes from './route/auth';
 
 // Initializations
 const app = express();
-const server = http.createServer(app);
+const server = https.createServer({
+  key: fs.readFileSync('server.key'),
+  cert: fs.readFileSync('server.cert')
+}, app);
 const ws = new Server(server);
 connectDB();
 
