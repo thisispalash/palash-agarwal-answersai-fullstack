@@ -6,6 +6,8 @@ import { Server } from 'socket.io';
 
 import connectDB from './db';
 
+import authRoutes from './route/auth';
+
 
 // Initializations
 const app = express();
@@ -18,9 +20,8 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.get('/', (req, res) => {
-  res.send('Ping!');
-});
+app.get('/', (req, res) => { res.send('Ping!') });
+app.use('/auth', authRoutes);
 
 // Websockets
 ws.on('connection', (socket) => {
