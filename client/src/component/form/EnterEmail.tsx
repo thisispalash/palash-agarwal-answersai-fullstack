@@ -5,6 +5,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
+import { useSetRecoilState } from 'recoil';
+import { emailState } from '@/lib/recoil';
+
 import { Input } from '../shadcn/ui/input';
 import { 
   Form, 
@@ -27,6 +30,7 @@ const formSchema = z.object({
 export default function EmailInput({ shouldExist, onSuccess }: EnterEmailProps) {
   const [ isSending, setIsSending ] = useState(false);
   const { toast } = useToast();
+  const setEmail = useSetRecoilState(emailState);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -61,7 +65,8 @@ export default function EmailInput({ shouldExist, onSuccess }: EnterEmailProps) 
       return setIsSending(false);
     }
 
-    onSuccess(data.email);
+    setEmail(email);
+    onSuccess();
   };
 
   return (
@@ -103,5 +108,5 @@ export default function EmailInput({ shouldExist, onSuccess }: EnterEmailProps) 
 
 type EnterEmailProps = {
   shouldExist: boolean;
-  onSuccess: (email: string) => void;
+  onSuccess: () => void;
 };

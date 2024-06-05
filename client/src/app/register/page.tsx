@@ -16,18 +16,12 @@ export default function RegisterPage() {
       {step === 0 && 
         <EnterEmail 
           shouldExist={false} 
-          onSuccess={
-            (email: string) => {
-              setEmail(email);
-              setStep(1);
-            }
-          }
+          onSuccess={() => setStep(1)}
         />
       }
 
       {step === 1 &&
         <EnterPassword
-          email={email}
           caller='register'
           onSuccess={() => setStep(2)}
         />

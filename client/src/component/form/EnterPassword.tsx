@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRecoilValue } from 'recoil';
+import { emailState } from '@/lib/recoil';
 
 import { Input } from '../shadcn/ui/input';
 import { 
@@ -23,31 +25,32 @@ const formSchema = z.object({
   password: z.string().min(8)
 });
 
-export default function EnterPassword({ email, onSuccess, caller }: EnterPasswordProps) {
+export default function EnterPassword({ onSuccess, caller }: EnterPasswordProps) {
   const [ isSending, setIsSending ] = useState(false);
   const { toast } = useToast();
+  const email = useRecoilValue(emailState);
   
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: email, password: '' }
   });
 
-  const registrationFlow = async (email: string, password: string) => {
-    if (await registerUser(email, password)) {
-      onSuccess();
+  const registrationFlow = async (_email: string, _password: string) => {
+    if (await registerUser(_email, _password)) {
+    onSuccess();
     } else {
       toast({
         title: `Registration Failed`,
         description: <p>
-          Email <i>email</i> not registered. Please try again.
+          Email <i>{email}</i> not registered. Please try again.
         </p>,
         variant: 'destructive'
       });
     }
   }
 
-  const loginFlow = async (email: string, password: string) => {
-    const logMessage = await loginUser(email, password);
+  const loginFlow = async (_email: string, _password: string) => {
+    const logMessage = await loginUser(_email, _password);
     if (typeof logMessage === 'boolean') {
       onSuccess();
     } else {
@@ -63,8 +66,8 @@ export default function EnterPassword({ email, onSuccess, caller }: EnterPasswor
     setIsSending(true);
 
     /// @dev separate functions to avoid multiple nesting
-    if (caller === 'login') await loginFlow(data.email, data.password);
-    else await registrationFlow(data.email, data.password);
+    if (caller === 'login') await loginFlow(email, data.password);
+    else await registrationFlow(email, data.password);
     
     setIsSending(false);
   };
@@ -124,7 +127,6 @@ export default function EnterPassword({ email, onSuccess, caller }: EnterPasswor
 }
 
 type EnterPasswordProps = {
-  email: string;
   onSuccess: () => void;
   caller: 'login' | 'register';
 };

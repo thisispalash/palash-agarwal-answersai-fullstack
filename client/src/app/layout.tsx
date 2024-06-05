@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { RecoilRoot }  from 'recoil';
 
 import ThemeProvider from '@/component/theme-provider';
 import { Toaster } from '@/component/shadcn/ui/toaster';
@@ -19,16 +20,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={inter.className}>
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='dark'
-          disableTransitionOnChange
-        >
-          {children}
-        </ThemeProvider>
-        <Toaster />
-      </body>
+      <RecoilRoot>
+        <body className={inter.className}>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='dark'
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+          <Toaster />
+        </body>
+      </RecoilRoot>
     </html>
   );
 }
