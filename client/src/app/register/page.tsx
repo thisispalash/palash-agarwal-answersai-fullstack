@@ -8,7 +8,6 @@ import EnterPassword from '@/component/form/EnterPassword';
 
 export default function RegisterPage() {
   const [ step, setStep ] = useState(0);
-  const [ email, setEmail ] = useState(''); /// @todo: this should be managed with `recoil`
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 gap-8">
