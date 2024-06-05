@@ -1,9 +1,19 @@
 'use client';
 
+import { useEffect } from 'react';
+
 import LoginBtn from '@/component/btn/LoginBtn';
 import RegisterBtn from '@/component/btn/RegisterBtn';
 
 export default function Home() {
+
+  useEffect(() => {
+    const session = JSON.parse(localStorage.getItem('session') || '{}');
+    if (session.exp && session.exp > Date.now()) {
+      window.location.href = '/chat';
+    }
+  }, []);
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 gap-8">
 

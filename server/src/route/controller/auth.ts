@@ -44,6 +44,7 @@ export const login = async (req: Request, res: Response) => {
 
     const token = jwt.sign({ email }, jwt_secret, { expiresIn: '24h' });
     const decode = jwt.decode(token) as { iat: number, exp: number };
+    /// @note `iat` and `exp` are in seconds, so we multiply by 1000 to get ms
 
     const session = new Session({
       userId: user._id,
@@ -56,7 +57,7 @@ export const login = async (req: Request, res: Response) => {
     await session.save();
     await user.save();
     
-    return res.status(200).json({ token, exp: decode.exp });
+    return res.status(200).json({ token, exp: decode.exp * 1000 });
   } catch (err: any) {
     return res.status(500).json({ message: 'Internal server error', error: err.message });
   }
