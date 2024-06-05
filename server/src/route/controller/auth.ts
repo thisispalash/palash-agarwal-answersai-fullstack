@@ -21,9 +21,10 @@ export const checkUser = async (req: Request, res: Response) => {
 }
 
 export const register = async (req: Request, res: Response) => {
-  const { email, password } = req.body; /// @dev: password should be hashed in client
+  const { email, password } = req.body; /// @dev: password is plaintext; @todo: transfer salt over network
   try {
-    const user = new User({ email, password });
+    const hashed = await bcrypt.hash(password, 10);
+    const user = new User({ email, password: hashed });
     await user.save();
     // TODO: send email verification
     return res.status(201).json({ message: 'User created' });
@@ -33,7 +34,7 @@ export const register = async (req: Request, res: Response) => {
 }
 
 export const login = async (req: Request, res: Response) => {
-  const { email, password } = req.body; /// @dev: password should be hashed in client
+  const { email, password } = req.body; /// @dev: password is plaintext; @todo: transfer salt over network
   try {
     const user = await User.findOne({ email });
     if (!user) return res.status(404).json({ message: 'User not found' });
