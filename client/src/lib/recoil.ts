@@ -1,6 +1,10 @@
 import { atom } from 'recoil';
+import { recoilPersist } from 'recoil-persist';
 
-const emailState = atom({
-  key: 'email',
+const { persistAtom } = recoilPersist();
+
+export const emailState = atom({
+  key: 'emailState',
   default: '',
+  effects_UNSTABLE: [persistAtom],
 });
