@@ -1,7 +1,6 @@
 'use client';
 
 import { z } from 'zod';
-import axios from 'axios';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,7 +13,12 @@ import {
   FormItem, 
   FormMessage 
 } from '../shadcn/ui/form';
+import { useToast } from '../shadcn/ui/use-toast';
+import RegisterBtn from '../btn/RegisterBtn';
 import SubmitBtn from '../btn/SubmitBtn';
+import LoginBtn from '../btn/LoginBtn';
+
+import { checkUser } from '@/lib/axios';
 
 const formSchema = z.object({
   email: z.string().email()
@@ -22,6 +26,7 @@ const formSchema = z.object({
 
 export default function EmailInput({ shouldExist, onSuccess }: EnterEmailProps) {
   const [ isSending, setIsSending ] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -31,31 +36,28 @@ export default function EmailInput({ shouldExist, onSuccess }: EnterEmailProps) 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setIsSending(true);
 
-    let code;
+    const email = data.email.toLowerCase();
+    const exists = await checkUser(email);
 
-    try {
-      const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/auth/check`, data);
-      code = res.status;
-    } catch (err: any) {
-      code = err.response.status;
-    } finally {
-      if (shouldExist) {
-        if (code === 200) {
-          onSuccess(data.email);
-        } else {
-          form.setError('email', { message: 'Email not found' });
-        }
-      } else {
-        if (code === 404) {
-          onSuccess(data.email);
-        } else {
-          form.setError('email', { message: 'Email already exists' });
-          /// @todo: add a link to login
-        }
-      }
+    if (shouldExist && !exists) {
+      toast({
+        title: `Please Register`,
+        description: `Email ${email} not found. Please use a different email, or register.`,
+        variant: 'destructive',
+        action: <RegisterBtn />
+      });
+      return setIsSending(false);
+    } else if (!shouldExist && exists) {
+      toast({
+        title: `Please Login`,
+        description: `Email ${email} already exists. Please use a different email, or login.`,
+        variant: 'destructive',
+        action: <LoginBtn />
+      });
+      return setIsSending(false);
     }
 
-    setIsSending(false);
+    onSuccess(data.email);
   };
 
   return (
