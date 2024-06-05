@@ -21,3 +21,17 @@ export async function registerUser(email: string, password: string) {
     return false;
   }
 }
+
+export async function loginUser(email: string, password: string) {
+  try {
+    const res = await api.post('/auth/login', { email, password });
+    const { token, exp } = res.data;
+    localStorage.setItem('session', JSON.stringify({ token, exp }));
+    return true;
+  } catch (err: any) {
+    const code = err.response.status;
+    if (code === 404) return 'User not found'; /// @dev this case should never happen
+    if (code === 401) return 'Invalid password';
+    return 'Internal server error';
+  }
+}

@@ -1,7 +1,6 @@
 'use client';
 
 import { z } from 'zod';
-import bcrypt from 'bcryptjs';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,14 +16,14 @@ import {
 import { useToast } from '../shadcn/ui/use-toast';
 import SubmitBtn from '../btn/SubmitBtn';
 
-import { registerUser } from '@/lib/axios';
+import { registerUser, loginUser } from '@/lib/axios';
 
 const formSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8)
 });
 
-export default function EnterPassword({ email, onSuccess }: EnterPasswordProps) {
+export default function EnterPassword({ email, onSuccess, caller }: EnterPasswordProps) {
   const [ isSending, setIsSending ] = useState(false);
   const { toast } = useToast();
   
@@ -33,22 +32,40 @@ export default function EnterPassword({ email, onSuccess }: EnterPasswordProps) 
     defaultValues: { email: email, password: '' }
   });
 
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    setIsSending(true);
-
-    const password = await bcrypt.hash(data.password, 10);
-    const registered = await registerUser(data.email, password);
-
-    if (registered) {
+  const registrationFlow = async (email: string, password: string) => {
+    if (await registerUser(email, password)) {
       onSuccess();
     } else {
       toast({
         title: `Registration Failed`,
-        description: `Email ${data.email} not registered. Please try again.`,
+        description: <p>
+          Email <i>email</i> not registered. Please try again.
+        </p>,
         variant: 'destructive'
       });
     }
+  }
 
+  const loginFlow = async (email: string, password: string) => {
+    const logMessage = await loginUser(email, password);
+    if (typeof logMessage === 'boolean') {
+      onSuccess();
+    } else {
+      toast({
+        title: logMessage,
+        description: `Login failed. Please try again.`,
+        variant: 'destructive'
+      });
+    }
+  }
+
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
+    setIsSending(true);
+
+    /// @dev separate functions to avoid multiple nesting
+    if (caller === 'login') await loginFlow(data.email, data.password);
+    else await registrationFlow(data.email, data.password);
+    
     setIsSending(false);
   };
 
@@ -109,4 +126,5 @@ export default function EnterPassword({ email, onSuccess }: EnterPasswordProps) 
 type EnterPasswordProps = {
   email: string;
   onSuccess: () => void;
+  caller: 'login' | 'register';
 };

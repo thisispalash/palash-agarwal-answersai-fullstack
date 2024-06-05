@@ -2,11 +2,10 @@
 
 import { useState } from 'react';
 
-import LoginBtn from '@/component/btn/LoginBtn';
 import EnterEmail from '@/component/form/EnterEmail';
 import EnterPassword from '@/component/form/EnterPassword';
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const [ step, setStep ] = useState(0);
   const [ email, setEmail ] = useState(''); /// @todo: this should be managed with `recoil`
 
@@ -15,7 +14,7 @@ export default function RegisterPage() {
 
       {step === 0 && 
         <EnterEmail 
-          shouldExist={false} 
+          shouldExist={true} 
           onSuccess={
             (email: string) => {
               setEmail(email);
@@ -28,20 +27,11 @@ export default function RegisterPage() {
       {step === 1 &&
         <EnterPassword
           email={email}
-          caller='register'
-          onSuccess={() => setStep(2)}
+          caller='login'
+          onSuccess={() => window.open('/chat', '_self')}
         />
       }
 
-      {step === 2 &&
-        <div className="flex flex-col gap-4 text-lg">
-          <p className="text-lg">
-            Congratulations! You have successfully registered. Please login.
-          </p>
-          <LoginBtn />
-        </div>
-      }
-
     </main>
-  );
+  )
 }

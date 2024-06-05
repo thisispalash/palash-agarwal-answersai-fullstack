@@ -42,7 +42,9 @@ export default function EmailInput({ shouldExist, onSuccess }: EnterEmailProps) 
     if (shouldExist && !exists) {
       toast({
         title: `Please Register`,
-        description: `Email ${email} not found. Please use a different email, or register.`,
+        description: <p>
+          Email <i>{email}</i> not found. Please use a different email, or register.
+        </p>,
         variant: 'destructive',
         action: <RegisterBtn />
       });
@@ -50,7 +52,9 @@ export default function EmailInput({ shouldExist, onSuccess }: EnterEmailProps) 
     } else if (!shouldExist && exists) {
       toast({
         title: `Please Login`,
-        description: `Email ${email} already exists. Please use a different email, or login.`,
+        description: <p>
+          Email <i>{email}</i> already exists. Please use a different email, or login.
+        </p>,
         variant: 'destructive',
         action: <LoginBtn />
       });
