@@ -77,3 +77,17 @@ export const session = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error', error: err.message });
   }
 }
+
+/// @dev to be used as a middleware fn to protect routes
+export const verifyJWT = async (req: Request, res: Response, next: any) => {
+  if (!req.headers.authorization) 
+    return res.status(401).json({ message: 'No token provided' });
+  const auth = req.headers.authorization as string;
+  const token = auth.split(' ')[1];
+  try {
+    jwt.verify(token, jwt_secret);
+    next();
+  } catch (err: any) {
+    return res.status(403).json({ message: 'Invalid token' });
+  }
+}

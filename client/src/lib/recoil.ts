@@ -9,6 +9,12 @@ export const emailState = atom({
   effects_UNSTABLE: [persistAtom],
 });
 
+export const jwtState = atom({
+  key: 'jwtState',
+  default: '',
+  effects_UNSTABLE: [persistAtom],
+});
+
 export const modelState = atom({
   key: 'modelState',
   default: 'gpt-3.5-turbo',
@@ -29,4 +35,14 @@ export const modelOrg = selector({
         return 'openai';
     }
   },
+});
+
+export const tokenUsageState = atom({
+  key: 'tokenUsageState',
+  default: {
+    pct: 0,
+    limit: 0,
+    actual: 0,
+  },
+  effects_UNSTABLE: [persistAtom],
 });

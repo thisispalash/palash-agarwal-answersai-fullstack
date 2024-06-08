@@ -3,6 +3,7 @@
 import { useRecoilValue } from 'recoil';
 import { emailState } from '@/lib/recoil';
 
+import TokenUsage from './TokenUsage';
 import ModelSelect from './ModelSelect';
 
 export default function SidePanel() {
@@ -11,6 +12,7 @@ export default function SidePanel() {
   return (
     <div className="flex flex-col items-center justify-between h-screen px-6 py-12 bg-gray-800 text-white">
 
+      <TokenUsage />
       
       <ModelSelect />
       

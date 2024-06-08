@@ -4,6 +4,8 @@ const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
+// auth functions
+
 export async function checkUser(email: string) {
   try {
     const res = await api.post('/auth/check', { email });
@@ -32,6 +34,23 @@ export async function loginUser(email: string, password: string) {
     const code = err.response.status;
     if (code === 404) return 'User not found'; /// @dev this case should never happen
     if (code === 401) return 'Invalid password';
+    return 'Internal server error';
+  }
+}
+
+// chat functions
+
+export async function fetchTokenUsage(email: string) {
+  try {
+    const jwt = JSON.parse(localStorage.getItem('session') as string).token;
+    const res = await api.post(
+      '/chat/token-usage', 
+      { email }, 
+      { headers: { Authorization: `Token ${jwt}` } }
+    );
+    return res.data; // { pct: number, limit: number, actual: number }
+  } catch (err: any) {
+    if (err.response.status === 403) return 'Invalid Token';
     return 'Internal server error';
   }
 }
