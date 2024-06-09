@@ -35,7 +35,6 @@ async function leaveChat(socket: Socket, _id: string) {
 
 async function chatPrompt(socket: Socket, _id: string, prompt: string) {
   const chat = await getChat(_id);
-  console.log('chatPrompt:', _id, prompt)
   if (!chat) {
     socket.emit('error', 'Chat not found!');
     return;
@@ -55,7 +54,7 @@ async function chatPrompt(socket: Socket, _id: string, prompt: string) {
 export default function socketHandlers(socket: Socket) {
 
   socket.on('join', (_id) => joinChat(socket, _id));
-  socket.on('prompt', (_id, prompt) => chatPrompt(socket, _id, prompt));
+  socket.on('prompt', ({ _id, prompt }) => chatPrompt(socket, _id, prompt));
   socket.on('leave', (_id) => leaveChat(socket, _id));
   socket.on('disconnect', () => console.log('Disconnected from client!'));
 

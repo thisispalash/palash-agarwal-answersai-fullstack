@@ -71,9 +71,3 @@ export const lastPromptState = atom({
   default: '',
   effects_UNSTABLE: [persistAtom],
 });
-
-export const initialPromptState = atom({
-  key: 'initialPromptState',
-  default: '',
-  effects_UNSTABLE: [persistAtom],
-});

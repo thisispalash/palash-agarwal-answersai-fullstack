@@ -5,7 +5,7 @@ import { usePathname } from 'next/navigation';
 import { Socket } from 'socket.io-client';
 import { useRecoilValue } from 'recoil';
 
-import { initialPromptState } from '@/lib/recoil';
+import { lastPromptState } from '@/lib/recoil';
 import { startSocket, stopSocket } from '@/lib/socket';
 
 import ChatBox from '@/component/chat/ChatBox';
@@ -15,8 +15,7 @@ export default function ChatPage() {
   const path = usePathname();
   const [ chatId, setChatId ] = useState<string | null>(null);
   const [ socket, setSocket ] = useState<Socket | null>(null);
-  const [ prompt, setPrompt ] = useState('');
-  const initialPrompt = useRecoilValue(initialPromptState);
+  const lastPrompt = useRecoilValue(lastPromptState);
 
   const handleReply = (reply: string) => {
 
@@ -36,16 +35,11 @@ export default function ChatPage() {
   }, [path]);
 
   useEffect(() => {
-    if (socket) 
-      socket.emit('prompt', { _id: chatId, prompt: initialPrompt });
-  }, [socket, initialPrompt, chatId]);
-
-  useEffect(() => {
     if (socket) {
-      socket.emit('prompt', { _id: chatId, prompt });
+      socket.emit('prompt', { _id: chatId, prompt: lastPrompt });
       socket.on('reply', handleReply);
     }
-  }, [socket, prompt, chatId]);
+  }, [socket, lastPrompt, chatId]);
 
 
   return (
@@ -57,7 +51,7 @@ export default function ChatPage() {
         
       </div>
 
-      <ChatBox socket={socket} setLastPrompt={setPrompt} setSocket={setSocket} />
+      <ChatBox />
 
     </div>
   );

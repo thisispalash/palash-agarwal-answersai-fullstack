@@ -3,23 +3,26 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { useRouter } from 'next/navigation';
-import { Socket } from 'socket.io-client';
 
-import { emailState, initialPromptState, modelDisplayName, modelState } from '@/lib/recoil';
+import { 
+  emailState, 
+  lastPromptState, 
+  modelDisplayName, 
+  modelState 
+} from '@/lib/recoil';
 import { startChat } from '@/lib/axios';
 
 import { Textarea } from '../shadcn/ui/textarea';
 import SubmitBtn from '../btn/SubmitBtn';
 
-export default function ChatBox({ socket, setLastPrompt, setSocket }: ChatBoxProps) {
+export default function ChatBox() {
+  const router = useRouter();
   const [ prompt, setPrompt ] = useState('');
-  const [ chatId, setChatId ] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const email = useRecoilValue(emailState);
   const model = useRecoilValue(modelState);
   const modelDN = useRecoilValue(modelDisplayName);
-  const router = useRouter();
-  const setInitialPrompt = useSetRecoilState(initialPromptState);
+  const setLastPrompt = useSetRecoilState(lastPromptState);
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPrompt(e.target.value);
@@ -36,16 +39,13 @@ export default function ChatBox({ socket, setLastPrompt, setSocket }: ChatBoxPro
     const path = window.location.pathname;
     if (path.endsWith('chat')) {
       const _id = await startChat(email, model);
-      setChatId(_id);
       router.push(`/chat/${_id}`);
-      setInitialPrompt(prompt);
     }
-    else {
-      setLastPrompt(prompt);
-      socket?.emit('prompt', { _id: chatId, prompt });
-    }
+    setLastPrompt(prompt);
+    setPrompt('');
   }
 
+  /// @dev auto resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -76,10 +76,4 @@ export default function ChatBox({ socket, setLastPrompt, setSocket }: ChatBoxPro
       />
     </div>
   );
-}
-
-interface ChatBoxProps {
-  socket?: Socket | null;
-  setSocket?: React.Dispatch<React.SetStateAction<Socket | null>>;
-  setLastPrompt: React.Dispatch<React.SetStateAction<string>>;
 }
