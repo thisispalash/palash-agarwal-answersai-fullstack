@@ -54,3 +54,19 @@ export async function fetchTokenUsage(email: string) {
     return 'Internal server error';
   }
 }
+
+export async function startChat(email: string, model: string) {
+  try {
+    const jwt = JSON.parse(localStorage.getItem('session') as string).token;
+    const res = await api.post(
+      '/chat/start', 
+      { email, model }, 
+      { headers: { Authorization: `Token ${jwt}` } }
+    );
+    const _id = res.data._id;
+    return _id;
+  } catch (err: any) {
+    if (err.response.status === 403) return 'Invalid Token';
+    return 'Internal server error';
+  }
+}

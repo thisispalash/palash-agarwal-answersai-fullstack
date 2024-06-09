@@ -1,17 +1,25 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRouter } from 'next/navigation';
+import { Socket } from 'socket.io-client';
 
-import { modelDisplayName } from '@/lib/recoil';
+import { emailState, initialPromptState, modelDisplayName, modelState } from '@/lib/recoil';
+import { startChat } from '@/lib/axios';
 
 import { Textarea } from '../shadcn/ui/textarea';
 import SubmitBtn from '../btn/SubmitBtn';
 
-export default function ChatBox() {
+export default function ChatBox({ socket, setLastPrompt, setSocket }: ChatBoxProps) {
   const [ prompt, setPrompt ] = useState('');
+  const [ chatId, setChatId ] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const model = useRecoilValue(modelDisplayName);
+  const email = useRecoilValue(emailState);
+  const model = useRecoilValue(modelState);
+  const modelDN = useRecoilValue(modelDisplayName);
+  const router = useRouter();
+  const setInitialPrompt = useSetRecoilState(initialPromptState);
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPrompt(e.target.value);
@@ -24,9 +32,18 @@ export default function ChatBox() {
     }
   }
 
-  const handleSumit = () => {
-    console.log(prompt);
-    setPrompt('');
+  const handleSumit = async () => {
+    const path = window.location.pathname;
+    if (path.endsWith('chat')) {
+      const _id = await startChat(email, model);
+      setChatId(_id);
+      router.push(`/chat/${_id}`);
+      setInitialPrompt(prompt);
+    }
+    else {
+      setLastPrompt(prompt);
+      socket?.emit('prompt', { _id: chatId, prompt });
+    }
   }
 
   useEffect(() => {
@@ -49,7 +66,7 @@ export default function ChatBox() {
         ref={textareaRef}
         onChange={handleInput}
         onKeyDown={submitOnEnter}
-        placeholder={`Message ${model}`}
+        placeholder={`Message ${modelDN}`}
         className="resize-none min-h-5 max-h-24 p-2 px-4 border-none rounded-md overflow-hidden w-full focus:ring-0 focus-visible:ring-0"
       />
       <SubmitBtn 
@@ -59,4 +76,10 @@ export default function ChatBox() {
       />
     </div>
   );
+}
+
+interface ChatBoxProps {
+  socket?: Socket | null;
+  setSocket?: React.Dispatch<React.SetStateAction<Socket | null>>;
+  setLastPrompt: React.Dispatch<React.SetStateAction<string>>;
 }

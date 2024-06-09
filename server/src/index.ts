@@ -7,6 +7,7 @@ import cors from 'cors';
 import { Server } from 'socket.io';
 
 import connectDB from './db';
+import socketHandlers from './lib/socket';
 
 import authRoutes from './route/auth';
 import chatRoutes from './route/chat';
@@ -17,7 +18,7 @@ const server = https.createServer({
   key: fs.readFileSync('server.key'),
   cert: fs.readFileSync('server.cert')
 }, app);
-const ws = new Server(server);
+const ws = new Server(server, { cors: { origin: '*' } });
 connectDB();
 
 // Middlewares
@@ -32,10 +33,7 @@ app.use('/chat', chatRoutes);
 // Websockets
 ws.on('connection', (socket) => {
   console.log('A user connected!');
-
-  socket.on('disconnect', () => {
-    console.log('A user disconnected!');
-  });
+  socketHandlers(socket);
 });
 
 // Start server

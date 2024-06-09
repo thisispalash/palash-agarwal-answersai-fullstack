@@ -65,3 +65,15 @@ export const tokenUsageState = atom({
   },
   effects_UNSTABLE: [persistAtom],
 });
+
+export const lastPromptState = atom({
+  key: 'lastPromptState',
+  default: '',
+  effects_UNSTABLE: [persistAtom],
+});
+
+export const initialPromptState = atom({
+  key: 'initialPromptState',
+  default: '',
+  effects_UNSTABLE: [persistAtom],
+});
