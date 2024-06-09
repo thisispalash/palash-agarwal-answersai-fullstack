@@ -14,7 +14,7 @@ export default function SidePanel() {
 
       <TokenUsage />
       
-      <ModelSelect />
+      {/* <ModelSelect /> */}
       
       <div className="flex flex-col gap-4">
         <p className="text-gray-300" suppressHydrationWarning>

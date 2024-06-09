@@ -1,7 +1,7 @@
 'use client';
 
-import { useRecoilState } from 'recoil';
-import { modelState } from '@/lib/recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { modelDisplayName, modelState } from '@/lib/recoil';
 
 import {
   Select,
@@ -12,17 +12,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../shadcn/ui/select';
-import { Label } from '../shadcn/ui/label';
 
-export default function ModelSelect() {
-  const [model, setModel] = useRecoilState(modelState);
+export default function ModelSelect({ disabled }: ModelSelectProps) {
+  const setModel = useSetRecoilState(modelState);
+  const modelName = useRecoilValue(modelDisplayName);
 
   return (
-    <div className="flex flex-col gap-4 w-4/5">
-      <Label>Select Model</Label>
-      <Select onValueChange={(v) => setModel(v)} defaultValue="gpt-3.5-turbo">
-        <SelectTrigger>
-          <SelectValue placeholder="Change Model">{model}</SelectValue>
+    <div className="flex flex-col gap-4 bg-gray-800 rounded-2xl w-1/6 right-4 fixed">
+      <Select 
+        disabled={disabled}
+        defaultValue="gpt-3.5-turbo" 
+        onValueChange={(v) => setModel(v)} 
+      >
+        <SelectTrigger className="border-0 focus:ring-0 focus-active:ring-0">
+          <SelectValue placeholder="Change Model">{modelName}</SelectValue>
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
@@ -36,4 +39,8 @@ export default function ModelSelect() {
       </Select>
     </div>
   );
+}
+
+interface ModelSelectProps {
+  disabled: boolean;
 }
