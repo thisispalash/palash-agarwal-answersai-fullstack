@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { modelState } from '@/lib/recoil';
+import { modelDisplayName } from '@/lib/recoil';
 
 import { Textarea } from '../shadcn/ui/textarea';
 import SubmitBtn from '../btn/SubmitBtn';
@@ -11,7 +11,7 @@ import SubmitBtn from '../btn/SubmitBtn';
 export default function ChatBox() {
   const [ prompt, setPrompt ] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const model = useRecoilValue(modelState);
+  const model = useRecoilValue(modelDisplayName);
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPrompt(e.target.value);
