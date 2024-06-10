@@ -4,7 +4,7 @@ import Chat from '@/model/Chat';
 import Message from '@/model/Message';
 import { tokenize } from '@/lib/openai';
 
-const DAILY_TOKEN_LIMIT = 10000;
+const DAILY_TOKEN_LIMIT = 500000;
 const SYS_MESSAGE = 'You are a helpful assistant';
 
 const throttleUser = async (user: IUser) => {
