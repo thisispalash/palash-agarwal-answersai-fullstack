@@ -58,6 +58,11 @@ export default function ChatBox() {
     }
   }, [prompt]);
 
+  useEffect(() => {
+    if (!window.location.pathname.endsWith('chat') && textareaRef && textareaRef.current)
+      textareaRef.current.focus();
+  }, []);
+
   return (
     <div className="fixed bottom-4 flex flex-row gap-2 w-3/5 bg-gray-800 rounded-2xl p-2 items-end">
       <Textarea
