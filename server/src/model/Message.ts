@@ -3,7 +3,7 @@ import { Schema, model, Document } from 'mongoose';
 export interface IMessage extends Document {
   role: string;
   content: string;
-  tokens?: number;
+  tokens: number;
 }
 
 const MessageSchema = new Schema({

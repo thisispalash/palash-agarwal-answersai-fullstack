@@ -7,7 +7,7 @@ export interface IChat extends Document {
   user: IUser;
   modelname: string;
   messages: Array<IMessage>;
-  tokens?: number;
+  tokens: number;
   timestamp: Date;
 }
 
