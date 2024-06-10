@@ -89,6 +89,7 @@ async function chatPrompt(socket: Socket, _id: string, prompt: string) {
   await chat.save();
 
   /// update user tokens
+  await chat.populate('user'); /// @dev this is necessary to get the latest user data
   const lastUse = chat.user.usage[chat.user.usage.length - 1]; /// @dev this will always be today since it is added within `checkThrottle`
   lastUse.tokens += promptTokens + assistantTokens;
   chat.user.usage[chat.user.usage.length - 1] = lastUse;
