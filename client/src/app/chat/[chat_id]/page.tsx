@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState, useRef } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Socket } from 'socket.io-client';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -13,6 +13,7 @@ import ModelSelect from '@/component/chat/ModelSelect';
 import ChatMessage from '@/component/chat/ChatMessage';
 import Spinner from '@/component/Spinner';
 import { Separator } from '@/component/shadcn/ui/separator';
+import { useToast } from '@/component/shadcn/ui/use-toast';
 
 export default function ChatPage() {
   const path = usePathname();
@@ -23,6 +24,8 @@ export default function ChatPage() {
   const lastPrompt = useRecoilValue(lastPromptState);
   const setTokenUsage = useSetRecoilState(tokenUsageState);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  const router = useRouter();
 
   const handleReply = useCallback(({ reply, usage }: any) => {
     setIsResponding(false);
@@ -59,6 +62,31 @@ export default function ChatPage() {
       bottomRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [history]);
+
+  socket?.on('error', (msg: string) => {
+    msg = msg.toLowerCase();
+    if (msg.includes('throttled')) {
+      toast({
+        title: 'User Throttled',
+        description: 'You have already used up the allowed tokens for today. Please try again tomorrow.',
+        variant: 'destructive'
+      });
+    } else if (msg.includes('openai')) {
+      toast({
+        title: 'OpenAI error',
+        description: 'Please try again later.',
+        variant: 'destructive'
+      });
+    } else if (msg.includes('not found')) {
+      /// @dev this case should not happen since we manage chatId in the URL
+      toast({
+        title: 'Chat not found',
+        description: 'Did you mess with the url? Please start a new chat.',
+        variant: 'destructive',
+      });
+      router.push('/chat');
+    } 
+  })
 
   return (
     <div className="flex flex-col items-center text-xl h-screen p-6">

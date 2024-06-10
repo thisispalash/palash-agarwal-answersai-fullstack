@@ -66,7 +66,8 @@ export async function startChat(email: string, model: string) {
     const _id = res.data._id;
     return _id;
   } catch (err: any) {
-    if (err.response.status === 403) return 'Invalid Token';
+    if (err.response.status === 403) return err.response.data.message; /// @dev 'Invalid Token' | 'User throttled'
+    if (err.response.status === 404) return 'User not found'; /// @dev this case should never happen
     return 'Internal server error';
   }
 }

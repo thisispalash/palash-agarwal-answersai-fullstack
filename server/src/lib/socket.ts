@@ -2,16 +2,21 @@ import { Socket } from 'socket.io';
 import Chat from '@/model/Chat';
 import Message from '@/model/Message';
 
-import { openaiChat, tokenize, tokenizeHistory, tokenizeText } from './openai';
+import { openaiChat, tokenizeHistory, tokenizeText } from './openai';
 import { checkThrottle, createUsageObject } from '@/route/controller/chat';
 
 async function getChat(_id: string) {
-  const chat = await Chat.findOne({ _id });
-  if (!chat) {
-    console.log(`Chat ${_id} not found!`);
+  try {
+    const chat = await Chat.findOne({ _id });
+    if (!chat) {
+      console.log(`Chat ${_id} not found!`);
+      return null;
+    }
+    return chat;
+  } catch (err) {
+    console.error(err);
     return null;
   }
-  return chat;
 }
 
 async function joinChat(socket: Socket, _id: string) {
