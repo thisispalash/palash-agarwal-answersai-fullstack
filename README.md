@@ -1,12 +1,19 @@
 ## AnswersAi Coding Assessment
 > [Task Description](https://answersai.notion.site/AnswersAi-Full-Stack-Technical-Assessment-f1beccc336374848a7accd472f7630b4)
 
+**Docs**
+- [API](./docs/api.md): List of api endpoints and websocket events.
+- [client](./docs/client.md): Information about the client side code.
+- [server](./docs/server.md): Information about the server code and architecture.
+- [cloud](./docs/cloud.md): Scalability architecture description.
+
 ## Running Instructions
 
-- `mkdir try && cd try`
+- `mkdir repo && cd repo`
 - `git clone https://github.com/thisispalash/palash-agarwal-answersai-fullstack.git .`
 
 **Docker**
+> Assumes Docker Desktop and `docker-compose` are installed
 
 - Start [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - `docker-compose up --build`
