@@ -11,6 +11,7 @@ import { startSocket, stopSocket } from '@/lib/socket';
 import ChatBox from '@/component/chat/ChatBox';
 import ModelSelect from '@/component/chat/ModelSelect';
 import ChatMessage from '@/component/chat/ChatMessage';
+import Spinner from '@/component/Spinner';
 import { Separator } from '@/component/shadcn/ui/separator';
 
 export default function ChatPage() {
@@ -18,13 +19,14 @@ export default function ChatPage() {
   const [ chatId, setChatId ] = useState<string | null>(null);
   const [ socket, setSocket ] = useState<Socket | null>(null);
   const [ history, setHistory ] = useState<{ role: 'user' | 'assistant', content: string }[]>([]);
+  const [ isResponding, setIsResponding ] = useState(false);
   const lastPrompt = useRecoilValue(lastPromptState);
   const setTokenUsage = useSetRecoilState(tokenUsageState);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const handleReply = useCallback(({ reply, usage }: any) => {
+    setIsResponding(false);
     setTokenUsage(usage);
-    console.log(reply);
     setHistory(h => [...h, { role: 'assistant', content: reply }]);
   }, [setTokenUsage, setHistory]);
 
@@ -44,6 +46,7 @@ export default function ChatPage() {
   useEffect(() => {
     if (socket) {
       setHistory(h => [...h, { role: 'user', content: lastPrompt }]);
+      setIsResponding(true);
       socket.emit('prompt', { _id: chatId, prompt: lastPrompt });
       socket.on('reply', handleReply);
       return () => socket.off('reply', handleReply);
@@ -77,6 +80,7 @@ export default function ChatPage() {
             <div ref={bottomRef} />
           </>;
         })}
+        {isResponding && <Spinner />}
       </div>
 
       <ChatBox />
