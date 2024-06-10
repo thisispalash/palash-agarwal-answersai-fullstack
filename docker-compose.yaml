@@ -14,6 +14,7 @@ services:
     ports:
       - '42069:42069'
     env_file:
+      - ./server/.env.example
       - ./server/.env
     environment:
       - MONGODB_HOST=mongo
@@ -26,6 +27,7 @@ services:
     ports:
       - '3000:3000'
     env_file:
+      - ./client/.env.example
       - ./client/.env.local
     environment:
       - NODE_ENV=production
