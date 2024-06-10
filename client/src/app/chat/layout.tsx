@@ -38,7 +38,7 @@ export default function ChatLayout({
 
 
   return (
-    <main className="flex min-h-screen flex-row items-center justify-center">
+    <main className="flex h-screen flex-row items-center justify-center">
       {loading && <Spinner />}
       {!loading && <>
         <div className="w-1/4">
