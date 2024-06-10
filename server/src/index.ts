@@ -5,6 +5,7 @@ import fs from 'fs';
 import https from 'https';
 import cors from 'cors';
 import { Server } from 'socket.io';
+import rateLimit from 'express-rate-limit';
 
 import connectDB from './db';
 import socketHandlers from './lib/socket';
@@ -20,9 +21,16 @@ const server = https.createServer({
 }, app);
 const ws = new Server(server, { cors: { origin: '*' } });
 connectDB();
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 100,
+  message: 'Too many requests from this IP, please try again after 10 minutes',
+  headers: true,
+});
 
 // Middlewares
 app.use(cors());
+app.use(limiter);
 app.use(express.json());
 
 // Routes
