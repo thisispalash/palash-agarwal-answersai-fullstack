@@ -82,7 +82,7 @@ export const startChat = async (req: Request, res: Response) => {
     const sysMessage = new Message({ 
       role: 'system', 
       content: SYS_MESSAGE,
-      tokens: tokenize(SYS_MESSAGE, model).count,
+      tokens: tokenize(SYS_MESSAGE, model, 'system').count,
     });
     await sysMessage.save();
     const chat = new Chat({ 
