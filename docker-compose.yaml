@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./docker:/data/db
+  
+  server:
+    build:
+      context: './server'
+    ports:
+      - '42069:42069'
+    env_file:
+      - ./server/.env
+    environment:
+      - MONGODB_HOST=mongo
+    depends_on:
+      - mongo
+  
+  client:
+    build:
+      context: './client'
+    ports:
+      - '3000:3000'
+    env_file:
+      - ./client/.env.local
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - server
+
+volumes:
+  docker:

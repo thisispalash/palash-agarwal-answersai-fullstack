@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const dbURI = 'mongodb://127.0.0.1:27017/democluster';
+const dbURI = `mongodb://${process.env.MONGODB_HOST ?? '127.0.0.1'}:27017/democluster`;
 
 async function connectDB() {
   try {
