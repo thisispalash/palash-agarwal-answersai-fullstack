@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 import EnterEmail from '@/component/form/EnterEmail';
 import EnterPassword from '@/component/form/EnterPassword';
 
 export default function LoginPage() {
   const [ step, setStep ] = useState(0);
+  const router = useRouter();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24 gap-8">
@@ -21,7 +23,7 @@ export default function LoginPage() {
       {step === 1 &&
         <EnterPassword
           caller='login'
-          onSuccess={() => window.open('/chat', '_self')}
+          onSuccess={() => router.push('/chat')}
         />
       }
 
