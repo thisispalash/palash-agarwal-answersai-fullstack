@@ -4,6 +4,15 @@ const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
+export async function pingServer() {
+  try {
+    const res = await api.get('/');
+    if (res.status === 200) return true;
+  } catch (err: any) {
+    return false;
+  }
+}
+
 // auth functions
 
 export async function checkUser(email: string) {
