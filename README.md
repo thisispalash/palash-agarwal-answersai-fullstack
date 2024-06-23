@@ -15,6 +15,9 @@
 **Docker**
 > Assumes Docker Desktop and `docker-compose` are installed
 
+- `cp ./server/.env.example ./server/.env`
+- Get a new api key from [OpenAI](https://platform.openai.com/api-keys) 
+- Add the key to `./server/.env` against `OPENAI_API_SECRET`
 - Start [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - `docker-compose up --build`
 - Navigate to [https://localhost:3000](https://localhost:3000)
